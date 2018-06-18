@@ -5,6 +5,7 @@
 ```
 npm install
 gulp serve
+node .tmp/server.js 35000 35050
 ```
 
 ## Running your application with Gulp
