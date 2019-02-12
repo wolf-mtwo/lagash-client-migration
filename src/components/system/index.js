@@ -7,7 +7,7 @@ import config from '../../config';
 
 let logger = log4js.getLogger('system');
 
-export default class System {
+export class System {
 
   constructor() {
     this.port = utils.normalizePort(process.env.PORT || config.port);
