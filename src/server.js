@@ -1,4 +1,5 @@
 import log4js from 'log4js';
+import { Oracle } from './components/oracle';
 
 let logger = log4js.getLogger('app');
 
@@ -16,3 +17,7 @@ let logger = log4js.getLogger('app');
 //
 // let monitor = new Monitor(start, end);
 // monitor.play();
+
+
+let oracle = new Oracle();
+oracle.connect();
