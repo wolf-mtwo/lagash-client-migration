@@ -8,10 +8,10 @@ mongoose.model('AutorTesis', new Schema({
     type: String,
     default: () => { return uuid(); }
   },
-  id_autor: {
+  ID_AUTOR: {
     type: Number
   },
-  id_tesis: {
+  ID_TESIS: {
     type: Number
   },
   created: {

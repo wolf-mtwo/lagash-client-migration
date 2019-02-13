@@ -24,10 +24,12 @@
     "jsonwebtoken": "^7.1.9",
     "lodash": "^4.17.4",
     "log4js": "^0.6.38",
+    "mongoose": "^5.4.11",
     "morgan": "^1.7.0",
     "oracledb": "^3.1.1",
     "superagent": "^3.6.3",
     "utf8": "^3.0.0",
-    "uuid": "^3.2.1"
+    "uuid": "^3.2.1",
+    "xml2js": "^0.4.19"
   }
 }

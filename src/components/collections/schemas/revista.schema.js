@@ -8,82 +8,79 @@ mongoose.model('Revista', new Schema({
     type: String,
     default: () => { return uuid(); }
   },
-  id_revista: {
+  ID_REVISTA: {
     type: Number
   },
-  id_generic: {
+  ID_GENERIC: {
     type: Number
   },
-  id_edit: {
+  ID_EDIT: {
     type: Number
   },
-  cod_revista: {
+  COD_REVISTA: {
     type: String
   },
-  cod_autor: {
+  COD_AUTOR: {
     type: String
   },
-  titulo: {
+  TITULO: {
     type: String
   },
-  sub_titulo: {
+  SUBTITULO: {
     type: String
   },
-  autor_institucional: {
+  AUTOR_INSTITUCIONAL: {
     type: String
   },
-  editor: {
+  EDITOR: {
     type: String
   },
-  fecha: {
+  FECHA: {
     type: String
   },
-  periodicidad: {
+  PERIODICIDAD: {
     type: String
   },
-  descriptores: {
+  DESCRIPTORES: {
     type: String
   },
-  indice: {
+  INDICE: {
     type: String
   },
-  numero: {
+  NUMERO: {
     type: String
   },
-  volumen: {
+  VOLUMEN: {
     type: String
   },
-  ejemplar: {
+  EJEMPLAR: {
     type: String
   },
-  paginas: {
+  PAGINAS: {
     type: String
   },
-  issn: {
+  INCLUYE: {
     type: String
   },
-  incluye: {
+  TIPO: {
     type: String
   },
-  tipo: {
+  ILUSTRACION: {
     type: String
   },
-  ilustracion: {
+  TAM: {
     type: String
   },
-  tam: {
+  PRECIO: {
     type: String
   },
-  precio: {
+  ESTADO: {
     type: String
   },
-  estado: {
+  NOTAS: {
     type: String
   },
-  notas: {
-    type: String
-  },
-  autor_aux: {
+  AUTOR_AUX: {
     type: String
   },
   created: {

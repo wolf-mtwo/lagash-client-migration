@@ -8,10 +8,10 @@ mongoose.model('AutorLibro', new Schema({
     type: String,
     default: () => { return uuid(); }
   },
-  id_autor: {
+  ID_AUTOR: {
     type: Number
   },
-  id_libro: {
+  ID_LIBRO: {
     type: Number
   },
   created: {

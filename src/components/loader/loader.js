@@ -25,59 +25,36 @@ export class Loader {
 
   start(dirname) {
     this.config = [
-      // { file: 'ARTICULO.txt', collection: 'Articulo', model: new Articulo() },
-      // { file: 'AUTOR_LIBRO.txt', collection: 'AutorLibro', model: new AutorLibro() },
-      // { file: 'AUTOR_TESIS.txt', collection: 'AutorTesis', model: new AutorTesis() },
-      // { file: 'AUTOR.txt', collection: 'Autor', model: new Autor() },
-      // { file: 'EDITORIAL.txt', collection: 'Editorial', model: new Editorial() },
+      { file: 'ARTICULO.xml', collection: 'Articulo', model: new Articulo() },
+      { file: 'AUTOR_LIBRO.xml', collection: 'AutorLibro', model: new AutorLibro() },
+      { file: 'AUTOR_TESIS.xml', collection: 'AutorTesis', model: new AutorTesis() },
+      { file: 'AUTOR.xml', collection: 'Autor', model: new Autor() },
+      { file: 'EDITORIAL.xml', collection: 'Editorial', model: new Editorial() },
       { file: 'LIBRO.xml', collection: 'Libro', model: new Libro() },
-      // { file: 'REVISTA.txt', collection: 'Revista', model: new Revista() },
-      // { file: 'TESIS.txt', collection: 'Tesis', model: new Tesis() }
+      { file: 'REVISTA.xml', collection: 'Revista', model: new Revista() },
+      { file: 'TESIS.xml', collection: 'Tesis', model: new Tesis() }
     ];
     this.run(dirname);
   }
 
   run(dirname) {
-    fs.readFile(dirname + '/../data/' + 'LIBRO.xml', function(err, data) {
-        parser.parseString(data, function (err, result) {
-            console.dir(result.main.DATA_RECORD[29317]);
-            // console.dir(result.main.DATA_RECORD[1]);
-            console.log('Done');
+    var item = this.config.shift();
+    if (!item) {
+      this.store();
+      return;
+    }
+    fs.readFile(dirname + '/../data/' + item.file, (err, data) => {
+        parser.parseString(data,  (err, result) => {
+            // console.dir(result.main.DATA_RECORD[4000]);
+            result.main.DATA_RECORD.forEach((record) => {
+              this.items.push({
+                config: item,
+                data: record
+              });
+            });
+            this.run();
         });
     });
-
-    // var item = this.config.shift();
-    // if (!item) {
-    //   this.store();
-    //   return;
-    // }
-    //
-    // var rd = readline.createInterface({
-    //   // input: fs.createReadStream(route)
-    //   // input: fs.createReadStream(route, { encoding: 'utf-8' })
-    //   input: fs.createReadStream(dirname + '/../data/' + item.file)
-    //   // output: process.stdout,
-    //   // console: false
-    // });
-    // var stage = [];
-    // rd.on('line', (line) => {
-    //   let row = {
-    //     config: item,
-    //     data: line.split('\\')
-    //   };
-    //   // if (row.config.collection === 'Libro' && row.data.length < 24) {
-    //   //   console.log('1');
-    //   //   // if (line.substring(line.length() - 1) === '\\') {
-    //   //   //   stage.push();
-    //   //   //   this.items.push();
-    //   //   // }
-    //   //   // return;
-    //   // }
-    //   this.items.push(row);
-    // });
-    // rd.on('close', () => {
-    //   this.run();
-    // });
   }
 
   store() {
@@ -85,17 +62,46 @@ export class Loader {
     if (!item) {
       return;
     }
-    // console.log(item);
-    // console.log(item.data[0], item.data.length);
-    item.config.model.create(this.model_factory(item))
-    .then((item) => {
+    item.config.model.create(this.model_change(item))
+    .then((record) => {
+      this.logger.debug('stored', item.config.collection, record._id);
       setTimeout(() => {
         this.store();
       }, 0);
     })
     .catch((err) => {
-      this.logger.error('cant create', item, err);
+      this.logger.error('can not create', item, err);
     });
+  }
+
+  model_change(item) {
+    for (var index in item.data) {
+      item.data[index] = item.data[index][0];
+    };
+    switch (item.config.collection) {
+      case 'Articulo':
+        //    paginas: item.data[3].trim() === 'NULL' || item.data[3].trim() === 'null' ? 0 : item.data[3],
+        item.ID_REVISTA = parseInt(item.ID_REVISTA);
+        item.ID_GENERIC = parseInt(item.ID_GENERIC);
+        item.ID_EDIT = parseInt(item.ID_EDIT);
+        return item.data;
+      case 'AutorLibro':
+        return item.data;
+      case 'AutorTesis':
+        return item.data;
+      case 'Autor':
+        return item.data;
+      case 'Editorial':
+        return item.data;
+      case 'Libro':
+        return item.data;
+      case 'Revista':
+        return item.data;
+      case 'Tesis':
+        return item.data;
+      default:
+        this.logger.error(`collection ${item.config.collection} does no exist`);
+    }
   }
 
   model_factory(item) {

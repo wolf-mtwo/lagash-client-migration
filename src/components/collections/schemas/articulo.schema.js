@@ -8,19 +8,22 @@ mongoose.model('Articulo', new Schema({
     type: String,
     default: () => { return uuid(); }
   },
-  id_articulo: {
+  ID_ARTICULO: {
     type: Number
   },
-  id_revista: {
+  ID_REVISTA: {
     type: Number
   },
-  titulo: {
+  TITULO: {
     type: String
   },
-  paginas: {
-    type: Number
+  // PAGINA: {
+  //   type: Number
+  // },
+  PAGINA: {
+    type: String
   },
-  autor: {
+  AUTOR: {
     type: String
   },
   created: {

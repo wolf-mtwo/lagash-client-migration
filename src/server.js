@@ -18,7 +18,8 @@ MongoDB.start()
 })
 .then(() => {
   logger.info('modules were loaded');
-  migration.start(__dirname);
+  // migration.load(__dirname); // to load mongo data base
+  migration.upload(__dirname);
 })
 .catch((err) => {
   logger.error(err);

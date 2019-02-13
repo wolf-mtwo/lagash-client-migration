@@ -8,16 +8,16 @@ mongoose.model('Editorial', new Schema({
     type: String,
     default: () => { return uuid(); }
   },
-  id_edit: {
+  ID_EDIT: {
     type: Number
   },
-  nombre: {
+  NOMBRE: {
     type: String
   },
-  pais: {
+  PAIS: {
     type: String
   },
-  ciudad: {
+  CIUDAD: {
     type: String
   },
   created: {

@@ -12,7 +12,11 @@ export class Migration {
     this.uploader = new Uploader();
   }
 
-  start(dirname) {
+  load(dirname) {
     this.loader.start(dirname);
+  }
+
+  upload(dirname) {
+    this.uploader.start(dirname);
   }
 }

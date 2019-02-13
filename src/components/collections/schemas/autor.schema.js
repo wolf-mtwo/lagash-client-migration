@@ -8,16 +8,16 @@ mongoose.model('Autor', new Schema({
     type: String,
     default: () => { return uuid(); }
   },
-  id_autor: {
+  ID_AUTOR: {
     type: Number
   },
-  nombre: {
+  NOMBRE: {
     type: String
   },
-  apellidos: {
+  APELLIDOS: {
     type: String
   },
-  nacionalidad: {
+  NACIONALIDAD: {
     type: String
   },
   created: {

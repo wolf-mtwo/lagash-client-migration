@@ -8,67 +8,67 @@ mongoose.model('Tesis', new Schema({
     type: String,
     default: () => { return uuid(); }
   },
-  id_tesis: {
+  ID_TESIS: {
     type: Number
   },
-  id_generic: {
+  ID_GENERIC: {
     type: Number
   },
-  id_edit: {
+  ID_EDIT: {
     type: Number
   },
-  cod_tesis: {
+  COD_TESIS: {
     type: String
   },
-  cod_autor: {
+  COD_AUTOR: {
     type: String
   },
-  titulo: {
+  TITULO: {
     type: String
   },
-  autor_institucional: {
+  AUTOR_INSTITUCIONAL: {
     type: String
   },
-  tutor: {
+  TUTOR: {
     type: String
   },
-  descriptores: {
+  DESCRIPTORES: {
     type: String
   },
-  indice: {
+  INDICE: {
     type: String
   },
-  categoria: {
+  CATEGORIA: {
     type: String
   },
-  facultad: {
+  FACULTAD: {
     type: String
   },
-  carrera: {
+  CARRERA: {
     type: String
   },
-  lugar: {
+  LUGAR: {
     type: String
   },
-  anio: {
+  ANIO: {
     type: String
   },
-  tipo: {
+  TIPO: {
     type: String
   },
-  precio: {
+  PRECIO: {
     type: String
   },
-  paginas: {
+  PAGINAS: {
     type: String
   },
-  estado: {
+  ESTADO: {
     type: String
   },
-  notas: {
+  NOTAS: {
     type: String
   },
-  autor_aux: {
+  AUTOR_AUX: {
     type: String
   },
   created: {

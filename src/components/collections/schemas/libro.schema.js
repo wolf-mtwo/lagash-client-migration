@@ -8,74 +8,74 @@ mongoose.model('Libro', new Schema({
     type: String,
     default: () => { return uuid(); }
   },
-  id_libro: {
-    type: Number
+  ID_LIBRO: {
+   type: Number
   },
-  id_generic: {
-    type: Number
+  ID_GENERIC: {
+   type: Number
   },
-  id_edit: {
-    type: Number
+  ID_EDIT: {
+   type: Number
   },
-  cod_lib: {
+  COD_LIB: {
+   type: String
+  },
+  COD_AUTOR: {
+   type: String
+  },
+  TITULO: {
+   type: String
+  },
+  DESCRIPTORES: {
+   type: String
+  },
+  INDICE: {
+   type: String
+  },
+  VOLUMEN: {
+   type: String
+  },
+  TOMO: {
+   type: String
+  },
+  EJEMPLAR: {
+   type: String
+  },
+  PAGINAS: {
+   type: String
+  },
+  ANIO: {
+   type: String
+  },
+  EDICION: {
     type: String
   },
-  cod_autor: {
-    type: String
+  ISBN: {
+   type: String
   },
-  titulo: {
-    type: String
+  INCLUYE: {
+   type: String
   },
-  descriptores: {
-    type: String
+  TIPO: {
+   type: String
   },
-  indice: {
-    type: String
+  ILUSTRACION: {
+   type: String
   },
-  volumen: {
-    type: String
+  TAM: {
+   type: String
   },
-  tomo: {
-    type: String
+  PRECIO: {
+   type: String
   },
-  ejemplar: {
-    type: String
+  ESTADO: {
+   type: String
   },
-  paginas: {
-    type: String
+  NOTAS: {
+   type: String
   },
-  anio: {
-    type: String
-  },
-  edicion: {
-    type: String
-  },
-  isbn: {
-    type: String
-  },
-  incluye: {
-    type: String
-  },
-  tipo: {
-    type: String
-  },
-  ilustracion: {
-    type: String
-  },
-  tam: {
-    type: String
-  },
-  precio: {
-    type: String
-  },
-  estado: {
-    type: String
-  },
-  notas: {
-    type: String
-  },
-  autor_aux: {
-    type: String
+  AUTOR_AUX: {
+   type: String
   },
   created: {
     type: Date,
