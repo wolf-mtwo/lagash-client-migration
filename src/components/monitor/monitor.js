@@ -4,53 +4,77 @@ import utf8 from 'utf8';
 import uuidv4 from 'uuid/v4';
 import log4js from 'log4js';
 
-function string_transcoder (target) {
+function string_transcoder(target) {
+  this.encodeList = encodings[target];
+  if (this.encodeList === undefined) {
+    return undefined;
+  }
 
-    this.encodeList = encodings[target];
-    if (this.encodeList === undefined) {
-
-        return undefined;
+  //Initialize the easy encodings
+  if (target === "windows-1252") {
+    var i;
+    for (i = 0x0; i <= 0x7F; i++) {
+      this.encodeList[i] = i;
     }
-
-    //Initialize the easy encodings
-    if (target === "windows-1252") {
-        var i;
-        for (i = 0x0; i <= 0x7F; i++) {
-            this.encodeList[i] = i;
-        }
-        for (i = 0xA0; i <= 0xFF; i++) {
-            this.encodeList[i] = i;
-        }
+    for (i = 0xA0; i <= 0xFF; i++) {
+      this.encodeList[i] = i;
     }
-
+  }
 }
 
-string_transcoder.prototype.transcode = function (inString) {
-    var res = new Uint8Array(inString.length), i;
-    for (i = 0; i < inString.length; i++) {
-        var temp = inString.charCodeAt(i);
-        var tempEncode = (this.encodeList)[temp];
-        if (tempEncode === undefined) {
-            return undefined; //This encoding is messed up
-        } else {
-            res[i] = tempEncode;
-        }
+string_transcoder.prototype.transcode = function(inString) {
+  var res = new Uint8Array(inString.length), i;
+  for (i = 0; i < inString.length; i++) {
+    var temp = inString.charCodeAt(i);
+    var tempEncode = (this.encodeList)[temp];
+    if (tempEncode === undefined) {
+      return undefined; //This encoding is messed up
+    } else {
+      res[i] = tempEncode;
     }
-    return res;
+  }
+  return res;
 };
 
 var encodings = {
-    "windows-1252": {0x20AC:0x80, 0x201A:0x82, 0x0192:0x83, 0x201E:0x84, 0x2026:0x85, 0x2020:0x86, 0x2021:0x87, 0x02C6:0x88, 0x2030:0x89, 0x0160:0x8A, 0x2039:0x8B, 0x0152:0x8C, 0x017D:0x8E, 0x2018:0x91, 0x2019:0x92, 0x201C:0x93, 0x201D:0x94, 0x2022:0x95, 0x2013:0x96, 0x2014:0x97, 0x02DC:0x98, 0x2122:0x99, 0x0161:0x9A, 0x203A:0x9B, 0x0153:0x9C, 0x017E:0x9E, 0x0178:0x9F}
+  "windows-1252": {
+    0x20AC:0x80,
+    0x201A:0x82,
+    0x0192:0x83,
+    0x201E:0x84,
+    0x2026:0x85,
+    0x2020:0x86,
+    0x2021:0x87,
+    0x02C6:0x88,
+    0x2030:0x89,
+    0x0160:0x8A,
+    0x2039:0x8B,
+    0x0152:0x8C,
+    0x017D:0x8E,
+    0x2018:0x91,
+    0x2019:0x92,
+    0x201C:0x93,
+    0x201D:0x94,
+    0x2022:0x95,
+    0x2013:0x96,
+    0x2014:0x97,
+    0x02DC:0x98,
+    0x2122:0x99,
+    0x0161:0x9A,
+    0x203A:0x9B,
+    0x0153:0x9C,
+    0x017E:0x9E,
+    0x0178:0x9F
+  }
 };
 
 var WINDOWS_1252 = '\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f !"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~€�‚ƒ„…†‡ˆ‰Š‹Œ�Ž��‘’“”•–—˜™š›œ�žŸ ¡¢£¤¥¦§¨©ª«¬­®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ';
-
 function fromWindows1252(binaryString) {
-    var text = '';
-    for (var i = 0; i < binaryString.length; i++) {
-        text += WINDOWS_1252.charAt(binaryString.charCodeAt(i));
-    }
-    return text;
+  var text = '';
+  for (var i = 0; i < binaryString.length; i++) {
+    text += WINDOWS_1252.charAt(binaryString.charCodeAt(i));
+  }
+  return text;
 }
 
 export class Monitor {
@@ -117,8 +141,7 @@ export class Monitor {
           "isbn": Math.floor((Math.random() * 1000000) + 1),
           "index": data.index.join('\n')
         };
-
-        return this.saveBulk(item)
+        return this.saveBulk(item);
       })
       .then((book) => {
         bookOrigin = book.body;
@@ -147,7 +170,7 @@ export class Monitor {
             _id: uuidv4()
           }).
           catch((err) => {
-              console.log(err.error);
+            console.log(err.error);
           });
         }));
       })
@@ -197,7 +220,7 @@ export class Monitor {
       }
     });
     this.data.forEach((info) => {
-     this.print(info);
+      this.print(info);
     });
   }
 
@@ -219,28 +242,48 @@ export class Monitor {
   saveBulk(item) {
     return request
     .post(this.set_URL())
-    .set('x-access-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiIyMDAxMjk4Yy1iNDYzLTQ3Y2MtYjQ4OS1hNjRhMjdlYzcyZjUiLCJlbWFpbCI6IndvbGZAd29sZi5jb20ifQ.3xTC4bceez_LzH7NOUtG3BEpGhIek8Ixf4QvYhAuzYk')
+    .set('x-access-token', [
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.',
+      'eyJfaWQiOiIyMDAxMjk4Yy1iNDYzLTQ3Y2MtYj',
+      'Q4OS1hNjRhMjdlYzcyZjUiLCJlbWFpbCI6Indvb',
+      'GZAd29sZi5jb20ifQ.3xTC4bceez_LzH7NOUtG3BEpGhIek8Ixf4QvYhAuzYk'
+    ].join(''))
     .send(item);
   }
 
   saveAuthor(item) {
     return request
     .post('http://localhost:5570/v1/authors')
-    .set('x-access-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiIyMDAxMjk4Yy1iNDYzLTQ3Y2MtYjQ4OS1hNjRhMjdlYzcyZjUiLCJlbWFpbCI6IndvbGZAd29sZi5jb20ifQ.3xTC4bceez_LzH7NOUtG3BEpGhIek8Ixf4QvYhAuzYk')
+    .set('x-access-token', [
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.',
+      'eyJfaWQiOiIyMDAxMjk4Yy1iNDYzLTQ3Y2MtYj',
+      'Q4OS1hNjRhMjdlYzcyZjUiLCJlbWFpbCI6Indvb',
+      'GZAd29sZi5jb20ifQ.3xTC4bceez_LzH7NOUtG3BEpGhIek8Ixf4QvYhAuzYk'
+    ].join(''))
     .send(item);
   }
 
   saveMap(item) {
     return request
     .post('http://localhost:5570/v1/author-map')
-    .set('x-access-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiIyMDAxMjk4Yy1iNDYzLTQ3Y2MtYjQ4OS1hNjRhMjdlYzcyZjUiLCJlbWFpbCI6IndvbGZAd29sZi5jb20ifQ.3xTC4bceez_LzH7NOUtG3BEpGhIek8Ixf4QvYhAuzYk')
+    .set('x-access-token', [
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.',
+      'eyJfaWQiOiIyMDAxMjk4Yy1iNDYzLTQ3Y2MtYj',
+      'Q4OS1hNjRhMjdlYzcyZjUiLCJlbWFpbCI6Indvb',
+      'GZAd29sZi5jb20ifQ.3xTC4bceez_LzH7NOUtG3BEpGhIek8Ixf4QvYhAuzYk'
+    ].join(''))
     .send(item);
   }
 
   saveEditorial(item) {
     return request
     .post('http://localhost:5570/v1/editorials')
-    .set('x-access-token', 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJfaWQiOiIyMDAxMjk4Yy1iNDYzLTQ3Y2MtYjQ4OS1hNjRhMjdlYzcyZjUiLCJlbWFpbCI6IndvbGZAd29sZi5jb20ifQ.3xTC4bceez_LzH7NOUtG3BEpGhIek8Ixf4QvYhAuzYk')
+    .set('x-access-token', [
+      'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.',
+      'eyJfaWQiOiIyMDAxMjk4Yy1iNDYzLTQ3Y2MtYj',
+      'Q4OS1hNjRhMjdlYzcyZjUiLCJlbWFpbCI6Indvb',
+      'GZAd29sZi5jb20ifQ.3xTC4bceez_LzH7NOUtG3BEpGhIek8Ixf4QvYhAuzYk'
+    ].join(''))
     .send(item);
   }
 
@@ -265,24 +308,26 @@ export class Monitor {
     var data = $('table[bgcolor=#3270b0]').find('tr');
     config.title = $(data[1]).find('font[color="#FFFF00"]').text();
     var authores = $(data[2]).find('font[color="#FFFF00"]').text();
-     config.authores = authores.replace(/\n/gi, '').split('|').map((author) => {
-       var value = author.split(',');
-       return {
-         last_name: value[0],
-         first_name: value[1]
-       }
-     });
-     var editorial = $(data[4]).find('td');
-     config.editorial = {
-        name: $(editorial[1]).text(),
-        country: $(editorial[3]).text(),
-        city: $(editorial[5]).text()
-     }
-     var tags = $(data[8]).find('font').text();
-     tags = tags.replace(/\t/gi, '').replace(/\n/gi, '').replace(/\]\[/gi, '],[');
-     config.tags = tags.split(',');
-     var index = $(data[10]).find('font').text();
-     config.index = index.replace(/\n/gi, '').split(',');
+    config.authores = authores.replace(/\n/gi, '').split('|').map((author) => {
+      var value = author.split(',');
+      return {
+        last_name: value[0],
+        first_name: value[1]
+      };
+    });
+    var editorial = $(data[4]).find('td');
+    config.editorial = {
+      name: $(editorial[1]).text(),
+      country: $(editorial[3]).text(),
+      city: $(editorial[5]).text()
+    };
+    var tags = $(data[8]).find('font').text();
+    tags = tags.replace(/\t/gi, '')
+    .replace(/\n/gi, '')
+    .replace(/\]\[/gi, '],[');
+    config.tags = tags.split(',');
+    var index = $(data[10]).find('font').text();
+    config.index = index.replace(/\n/gi, '').split(',');
     return config;
   }
 }

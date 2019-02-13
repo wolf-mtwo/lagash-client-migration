@@ -1,23 +1,25 @@
 import log4js from 'log4js';
-import { Oracle } from './components/oracle';
+import { System } from './components/system';
+import { MongoDB } from './components/mongo';
+import { Migration } from './components/migration';
 
 let logger = log4js.getLogger('app');
+let system = new System();
+let migration = new Migration();
 
-// HTML Migrations
-// import { Monitor } from './components/monitor';
-// logger.warn('node .tmp/server.js <start> <end> B');
-// let node = process.argv[0];
-// let path = process.argv[1];
-// let start = process.argv[2] || 20000;
-// let end = process.argv[3] || 20010;
-// logger.info('[node]', node);
-// logger.info('[path]', path);
-// logger.info('[start]', start);
-// logger.info('[end]', end);
-//
-// let monitor = new Monitor(start, end);
-// monitor.play();
-
-
-let oracle = new Oracle();
-oracle.connect();
+MongoDB.start()
+.then(() => {
+  logger.info('Database connect successfully');
+  return MongoDB.loadModels(__dirname);
+})
+.then(() => {
+  logger.info('mongo models were loaded');
+  return system.loadModules(__dirname);
+})
+.then(() => {
+  logger.info('modules were loaded');
+  migration.start(__dirname);
+})
+.catch((err) => {
+  logger.error(err);
+});
