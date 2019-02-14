@@ -1,3 +1,8 @@
+"use strict";
+
+import "babel-core/register";
+import "babel-polyfill";
+
 import log4js from 'log4js';
 import { System } from './components/system';
 import { MongoDB } from './components/mongo';
@@ -18,9 +23,12 @@ MongoDB.start()
 })
 .then(() => {
   logger.info('modules were loaded');
-  // migration.load(__dirname); // to load mongo data base
+  migration.load(__dirname); // to load mongo data base
   migration.upload(__dirname);
 })
 .catch((err) => {
   logger.error(err);
 });
+
+let date = new Date();
+setInterval(() => { logger.info('uptime', date); }, 10000);

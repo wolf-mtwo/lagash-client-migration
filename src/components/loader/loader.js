@@ -25,14 +25,14 @@ export class Loader {
 
   start(dirname) {
     this.config = [
-      { file: 'ARTICULO.xml', collection: 'Articulo', model: new Articulo() },
-      { file: 'AUTOR_LIBRO.xml', collection: 'AutorLibro', model: new AutorLibro() },
-      { file: 'AUTOR_TESIS.xml', collection: 'AutorTesis', model: new AutorTesis() },
-      { file: 'AUTOR.xml', collection: 'Autor', model: new Autor() },
-      { file: 'EDITORIAL.xml', collection: 'Editorial', model: new Editorial() },
-      { file: 'LIBRO.xml', collection: 'Libro', model: new Libro() },
-      { file: 'REVISTA.xml', collection: 'Revista', model: new Revista() },
-      { file: 'TESIS.xml', collection: 'Tesis', model: new Tesis() }
+      // { file: 'ARTICULO.xml', collection: 'Articulo', model: new Articulo() },
+      // { file: 'AUTOR_LIBRO.xml', collection: 'AutorLibro', model: new AutorLibro() },
+      // { file: 'AUTOR_TESIS.xml', collection: 'AutorTesis', model: new AutorTesis() },
+      // { file: 'AUTOR.xml', collection: 'Autor', model: new Autor() },
+      // { file: 'EDITORIAL.xml', collection: 'Editorial', model: new Editorial() },
+      // { file: 'LIBRO.xml', collection: 'Libro', model: new Libro() },
+      // { file: 'REVISTA.xml', collection: 'Revista', model: new Revista() },
+      // { file: 'TESIS.xml', collection: 'Tesis', model: new Tesis() }
     ];
     this.run(dirname);
   }
@@ -44,6 +44,7 @@ export class Loader {
       return;
     }
     fs.readFile(dirname + '/../data/' + item.file, (err, data) => {
+        this.logger.info(dirname);
         parser.parseString(data,  (err, result) => {
             // console.dir(result.main.DATA_RECORD[4000]);
             result.main.DATA_RECORD.forEach((record) => {
@@ -81,9 +82,9 @@ export class Loader {
     switch (item.config.collection) {
       case 'Articulo':
         //    paginas: item.data[3].trim() === 'NULL' || item.data[3].trim() === 'null' ? 0 : item.data[3],
-        item.ID_REVISTA = parseInt(item.ID_REVISTA);
-        item.ID_GENERIC = parseInt(item.ID_GENERIC);
-        item.ID_EDIT = parseInt(item.ID_EDIT);
+        // item.ID_REVISTA = parseInt(item.ID_REVISTA);
+        // item.ID_GENERIC = parseInt(item.ID_GENERIC);
+        // item.ID_EDIT = parseInt(item.ID_EDIT);
         return item.data;
       case 'AutorLibro':
         return item.data;
@@ -94,6 +95,13 @@ export class Loader {
       case 'Editorial':
         return item.data;
       case 'Libro':
+        // console.log(item.data.ID_LIBRO);
+        if (item.data.ID_LIBRO === '36722') {
+          console.log(item.data);
+        }
+        if (item.data.ID_LIBRO === '36158') {
+          console.log(item.data);
+        }
         return item.data;
       case 'Revista':
         return item.data;
