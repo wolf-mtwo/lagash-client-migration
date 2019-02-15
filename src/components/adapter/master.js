@@ -70,7 +70,7 @@ export class Master {
   find_one(query) {
     return new Promise((resolve, reject) => {
       this.Model.findOne(query)
-      .sort('-created')
+      .sort('created')
       .exec((err, item) => {
         if (err) {
           reject(err);
@@ -83,7 +83,7 @@ export class Master {
 
   query(query) {
     return new Promise((resolve, reject) => {
-      this.Model.find(query).sort('-created')
+      this.Model.find(query).sort('created')
       .exec((err, items) => {
         if (err) {
           reject(err);
