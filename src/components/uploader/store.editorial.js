@@ -47,15 +47,15 @@ export class StoreEditorial {
     }, 0);
   }
 
-  save(item) {
-    let editorial = {
+  save(record) {
+    let item = {
       '_id': item._id,
       // '_id': uuidv4(),
-      'name': this.update_string(item.NOMBRE),
-      'city': this.update_string(item.CIUDAD),
-      'country': this.update_string(item.PAIS)
+      'name': this.update_string(record.NOMBRE),
+      'city': this.update_string(record.CIUDAD),
+      'country': this.update_string(record.PAIS)
     };
-    return this.save_editorial(editorial)
+    return this.save_editorial(item)
     .then((res) => {
       return res.body;
     });

@@ -13,12 +13,16 @@ import { Libro } from '../collections/models/libro';
 import { Revista } from '../collections/models/revista';
 import { Tesis } from '../collections/models/tesis';
 
+import { StoreAutor } from './store.autor';
 import { StoreEditorial } from './store.editorial';
+import { StoreBook } from './store.book';
 
 export class Uploader {
 
   constructor() {
     this.storeEditorial = new StoreEditorial();
+    this.storeBook = new StoreBook();
+    this.storeAutor = new StoreAutor();
   }
 
   start() {
@@ -35,128 +39,130 @@ export class Uploader {
 
     // console.log(this.libro.model.find_one({ ID_LIBRO: this.libro.start++ }));
     // this.store();
-    this.storeEditorial.start();
+    // this.storeEditorial.start();
+    // this.storeBook.start();
+    this.storeAutor.start();
   }
 
-  async store() {
-    // var item = this.items.shift();
-    if (this.libro.start >= this.libro.end) {
-      return;
-    }
-    let item = await this.libro.model.find_one({ ID_LIBRO: this.libro.start++ })
-    this.logger.debug('book', this.libro.start, '-' , item ? item._id : null);
-    if (!item) {
-      this.store_next();
-      return;
-    }
+  // async store() {
+  //   // var item = this.items.shift();
+  //   if (this.libro.start >= this.libro.end) {
+  //     return;
+  //   }
+  //   let item = await this.libro.model.find_one({ ID_LIBRO: this.libro.start++ })
+  //   this.logger.debug('book', this.libro.start, '-' , item ? item._id : null);
+  //   if (!item) {
+  //     this.store_next();
+  //     return;
+  //   }
+  //
+  //   let editorial = await this.editorial.model.find_one({ID_EDIT: item.ID_EDIT });
+  //   let autor_map = await this.autorLibro.model.query({ID_LIBRO: item.ID_LIBRO });
+  //   let autors = [];
+  //   for (const map of autor_map) {
+  //       autors.push(await this.autor.model.find_one({ID_AUTOR: map.ID_AUTOR }));
+  //   }
+  //   console.log(editorial);
+  //   console.log(autors);
+  //   console.log(item);
+  // }
 
-    let editorial = await this.editorial.model.find_one({ID_EDIT: item.ID_EDIT });
-    let autor_map = await this.autorLibro.model.query({ID_LIBRO: item.ID_LIBRO });
-    let autors = [];
-    for (const map of autor_map) {
-        autors.push(await this.autor.model.find_one({ID_AUTOR: map.ID_AUTOR }));
-    }
-    console.log(editorial);
-    console.log(autors);
-    console.log(item);
-  }
+  // store_next() {
+  //   setTimeout(() => {
+  //     this.store();
+  //   }, 0);
+  // }
 
-  store_next() {
-    setTimeout(() => {
-      this.store();
-    }, 0);
-  }
-
-  run() {
-    this.logger = log4js.getLogger('guardando.....');
-    let item = this.items.shift();
-    if (!item) {
-      // this.show_report();
-      return;
-    }
-    return this.loadBulk(item)
-    .then((res) => {
-      return this.collector(res.text);
-    })
-    .then((data) => {
-      let bookOrigin = null;
-      let editorial = {
-        "_id": uuidv4(),
-        "name": data.editorial.name,
-        "city": data.editorial.city,
-        "country": data.editorial.country
-      };
-      return this.saveEditorial(editorial)
-      .then((editorial) => {
-        editorial = editorial.body;
-        var item = {
-          "_id": uuidv4(),
-          "code": [
-            'ZZZ',
-            uuidv4().substring(0, 3),
-            uuidv4().substring(0, 3)
-          ].join('.'),
-          "enabled": true,
-          "tags": data.tags.join(','),
-          "type": null,
-          "cover": null,
-          "length": Math.floor((Math.random() * 100) + 1),
-          "width": Math.floor((Math.random() * 100) + 1),
-          "pages": Math.floor((Math.random() * 1000) + 1),
-          "price": Math.floor((Math.random() * 500) + 1),
-          "illustrations": null,
-          "brings": null,
-          "year": 2018,
-          "editorial_id": editorial._id,
-          "title": data.title,
-          "isbn": Math.floor((Math.random() * 1000000) + 1),
-          "index": data.index.join('\n')
-        };
-        return this.saveBulk(item);
-      })
-      .then((book) => {
-        bookOrigin = book.body;
-        this.logger.info('Se guardo el libro:', data.title);
-        let authores = data.authores.map((author) => {
-          return {
-            "_id": uuidv4(),
-            "country": "bolivia",
-            "code": uuidv4().substring(0, 6),
-            "first_name": author.first_name,
-            "last_name": author.last_name
-          };
-        });
-        return Promise.all(authores.map((author) => {
-          return this.saveAuthor(author);
-        }));
-      })
-      .then((result) => {
-        this.logger.info('Se guardaron los authores:', JSON.stringify(data.authores));
-        return Promise.all(result.map((author) => {
-          author = author.body;
-          return this.saveMap({
-            author_id: author._id,
-            resource_id: bookOrigin._id,
-            type: "BOOK",
-            _id: uuidv4()
-          }).
-          catch((err) => {
-            console.log(err.error);
-          });
-        }));
-      })
-      .then((result) => {
-        this.logger.info('El libro se guardo correctamente');
-      });
-    })
-    .then((result) => {
-      this.run();
-    })
-    .catch((err) => {
-      console.log(err.message);
-      this.run();
-    });
-  }
+  // run() {
+  //   this.logger = log4js.getLogger('guardando.....');
+  //   let item = this.items.shift();
+  //   if (!item) {
+  //     // this.show_report();
+  //     return;
+  //   }
+  //   return this.loadBulk(item)
+  //   .then((res) => {
+  //     return this.collector(res.text);
+  //   })
+  //   .then((data) => {
+  //     let bookOrigin = null;
+  //     let editorial = {
+  //       "_id": uuidv4(),
+  //       "name": data.editorial.name,
+  //       "city": data.editorial.city,
+  //       "country": data.editorial.country
+  //     };
+  //     return this.saveEditorial(editorial)
+  //     .then((editorial) => {
+  //       editorial = editorial.body;
+  //       var item = {
+  //         "_id": uuidv4(),
+  //         "code": [
+  //           'ZZZ',
+  //           uuidv4().substring(0, 3),
+  //           uuidv4().substring(0, 3)
+  //         ].join('.'),
+  //         "enabled": true,
+  //         "tags": data.tags.join(','),
+  //         "type": null,
+  //         "cover": null,
+  //         "length": Math.floor((Math.random() * 100) + 1),
+  //         "width": Math.floor((Math.random() * 100) + 1),
+  //         "pages": Math.floor((Math.random() * 1000) + 1),
+  //         "price": Math.floor((Math.random() * 500) + 1),
+  //         "illustrations": null,
+  //         "brings": null,
+  //         "year": 2018,
+  //         "editorial_id": editorial._id,
+  //         "title": data.title,
+  //         "isbn": Math.floor((Math.random() * 1000000) + 1),
+  //         "index": data.index.join('\n')
+  //       };
+  //       return this.saveBulk(item);
+  //     })
+  //     .then((book) => {
+  //       bookOrigin = book.body;
+  //       this.logger.info('Se guardo el libro:', data.title);
+  //       let authores = data.authores.map((author) => {
+  //         return {
+  //           "_id": uuidv4(),
+  //           "country": "bolivia",
+  //           "code": uuidv4().substring(0, 6),
+  //           "first_name": author.first_name,
+  //           "last_name": author.last_name
+  //         };
+  //       });
+  //       return Promise.all(authores.map((author) => {
+  //         return this.saveAuthor(author);
+  //       }));
+  //     })
+  //     .then((result) => {
+  //       this.logger.info('Se guardaron los authores:', JSON.stringify(data.authores));
+  //       return Promise.all(result.map((author) => {
+  //         author = author.body;
+  //         return this.saveMap({
+  //           author_id: author._id,
+  //           resource_id: bookOrigin._id,
+  //           type: "BOOK",
+  //           _id: uuidv4()
+  //         }).
+  //         catch((err) => {
+  //           console.log(err.error);
+  //         });
+  //       }));
+  //     })
+  //     .then((result) => {
+  //       this.logger.info('El libro se guardo correctamente');
+  //     });
+  //   })
+  //   .then((result) => {
+  //     this.run();
+  //   })
+  //   .catch((err) => {
+  //     console.log(err.message);
+  //     this.run();
+  //   });
+  // }
 
 
   store_book(item) {
