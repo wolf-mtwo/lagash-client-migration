@@ -6,6 +6,7 @@ import log4js from 'log4js';
 import { MapStoreAutor } from './map.store.autor';
 import { MapStoreEditorial } from './map.store.editorial';
 import { StoreBook } from './store.book';
+import { StoreThesis } from './store.thesis';
 
 export class Uploader {
 
@@ -13,7 +14,8 @@ export class Uploader {
     this.storeAutor = new MapStoreAutor();
     this.storeEditorial = new MapStoreEditorial();
     this.storeBook = new StoreBook();
-    this.isEmpty = false;
+    this.storeThesis = new StoreThesis();
+    this.isEmpty = true;
   }
 
   start() {
@@ -23,10 +25,15 @@ export class Uploader {
 
   store() {
     this.logger.info('start book');
-    this.storeBook.start(this.isEmpty);
-    // this.logger.info('start autor');
-    // this.storeAutor.start(this.isEmpty);
-    // this.logger.info('start editorial');
-    // this.storeEditorial.start(this.isEmpty);
+    // this.storeBook.start(this.isEmpty, this);
+    this.logger.info('start thesis');
+    this.storeThesis.start(this.isEmpty, this);
+  }
+
+  store_helpers() {
+    this.logger.info('start autor');
+    this.storeAutor.start(this.isEmpty);
+    this.logger.info('start editorial');
+    this.storeEditorial.start(this.isEmpty);
   }
 }

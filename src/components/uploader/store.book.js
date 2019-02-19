@@ -15,14 +15,16 @@ export class StoreBook extends Store {
 
   constructor() {
     super();
+    this.uploader = null;
     this.isEmpty = null;
     this.URI = `/v1/books`;
     this.logger = log4js.getLogger('store-book');
   }
 
-  start(isEmpty) {
+  start(isEmpty, uploader) {
+    this.uploader = uploader;
     this.isEmpty = isEmpty;
-    this.libro = { start: 0, end: 10, model: new Libro() };
+    this.libro = { start: 0, end: 1000, model: new Libro() };
     // this.libro = { start: 0, end: 36895, model: new Libro() };
     this.autorLibro = { start: 0, end: 0, model: new AutorLibro() };
     this.editorial = { start: 0, end: 0, model: new Editorial() };
@@ -33,22 +35,37 @@ export class StoreBook extends Store {
     this.store();
   }
 
+  store_helpers() {
+    this.uploader.store_helpers();
+  }
+
   async store() {
     if (this.libro.start >= this.libro.end) {
+      this.store_helpers();
       return;
     }
     this.libro.start++;
     let first_book = await this.libro.model.find_one({});
     if (!first_book) {
-      this.store_next();
+      this.store_helpers();
       return;
     }
+    // 'volumen': this.update_int(record.VOLUMEN),
+    // 'tomo': this.update_int(record.TOMO),
+    // 'edition': this.update_string(record.EDICION),
     let items = await this.libro.model.query({
       COD_LIB: first_book.COD_LIB,
-      COD_AUTOR: first_book.COD_AUTOR
+      COD_AUTOR: first_book.COD_AUTOR,
+      TOMO: first_book.TOMO,
+      // VOLUMEN: first_book.VOLUMEN || null,
+      VOLUMEN: first_book.VOLUMEN,
+      EDICION: first_book.EDICION || null
     });
-    console.log(items);
-    this.logger.debug('start book', this.libro.start, '-' , first_book.TITULO);
+    // console.log(first_book);
+    // console.log(first_book.EDICION);
+    // console.log(items);
+    // this.logger.info('book start :', this.libro.start, '-' , first_book.TITULO);
+    this.logger.info('book start :', this.libro.start, '|', first_book.COD_LIB, first_book.COD_AUTOR, '-', first_book.TITULO);
     let editorial = await this.editorial.model.find_one({ID_EDIT: first_book.ID_EDIT});
     let autor_map = await this.autorLibro.model.query({ID_LIBRO: first_book.ID_LIBRO});
     let aux_editorial = await this.mapEditorial.query({ID_EDIT: editorial.ID_EDIT});
@@ -67,36 +84,41 @@ export class StoreBook extends Store {
     }
     try {
       let record = await this.save(first_book, editorial, autor_map);
+      // console.log(record);
       for (const autor of autors) {
-        this.logger.info('autor start', autor.NOMBRE);
+        this.logger.debug('autor start :', autor._id, autor.NOMBRE);
         await this.saveAutorMap({
           author_id: autor._id,
-          resource_id: record._id,
+          material_id: record._id,
           type: 'BOOK',
           _id: uuidv4()
         });
-        this.logger.info('autor end', autor.NOMBRE);
+        this.logger.debug('autor end   :', autor._id, autor.NOMBRE);
       }
       for (const aux_item of items) {
-        this.logger.info('ejemplar start', aux_item.TITULO);
-        await this.saveEjemplarMap({
-          code: this.update_string(aux_item.COD_LIB),
-          code_item: this.update_string(aux_item.COD_LIB),
-          code_author: this.update_string(aux_item.COD_AUTOR),
-          data_id: record._id,
+        this.logger.debug('ejemplar start :', aux_item.COD_LIB, aux_item.COD_AUTOR, '-', aux_item.TITULO);
+        var ejemplar = {
+          // code: this.update_string(aux_item.COD_LIB),
+          // code_item: this.update_string(aux_item.COD_LIB),
+          // code_author: this.update_string(aux_item.COD_AUTOR),
+          material_id: record._id,
           enabled: true,
           // inventory: aux_item.ID_LIBRO,
           inventory: this.isEmpty ? aux_item.ID_LIBRO : Math.floor(Math.random() * 2000000),
-          order: this.update_string(aux_item.EJEMPLAR),
-          state: "STORED",
+          order: this.update_int(aux_item.EJEMPLAR),
+          state: 'STORED',
           _id: uuidv4()
-        }, record._id);
-        this.logger.info('ejemplar end', aux_item.TITULO);
+        };
+        await this.saveEjemplarMap(ejemplar, record._id);
+        this.logger.debug('ejemplar end   :', aux_item.COD_LIB, aux_item.COD_AUTOR, '-', aux_item.TITULO);
       }
       for (const aux_item of items) {
         await this.libro.model.remove(aux_item);
       }
+      this.store_next();
     } catch (e) {
+      // this.libro.model.remove(first_book);
+      // this.store_next();
       this.logger.error(e.response ? e.response.body: e);
     }
   }
@@ -107,8 +129,8 @@ export class StoreBook extends Store {
       '_id': this.isEmpty ? record._id : uuidv4(),
       // 'code': this.update_string(record.COD_LIB) + uuidv4(),
       // '_id': item._id,
-      'code_item': this.update_string(record.COD_LIB),
-      'code_author': this.update_string(record.COD_AUTOR),
+      'code_material': this.update_string(record.COD_LIB),
+      'code_author': this.update_string(record.COD_AUTOR) ? this.update_string(record.COD_AUTOR) : 'null',
       'enabled': true,
       // : this.update_string(record.ID_LIBRO),
       // : this.update_string(record.ID_GENERIC),
@@ -116,17 +138,17 @@ export class StoreBook extends Store {
       'title': this.update_string(record.TITULO),
       'tags': this.update_string(record.DESCRIPTORES),
       'index': this.update_string(record.INDICE),
-      // : this.update_string(record.VOLUMEN),
-      // : this.update_string(record.TOMO),
-      // : this.update_string(record.EJEMPLAR),
+      'volumen': this.update_int(record.VOLUMEN),
+      'tomo': this.update_int(record.TOMO),
+      'edition': this.update_int(record.EDICION),
+      // : this.update_int(record.EJEMPLAR),
       'type': '',
       'pages': this.update_int(record.PAGINAS),
       'year': this.update_year(record.ANIO),
-      // : this.update_string(record.EDICION),
       'isbn': this.update_string(record.ISBN),
-      'brings': this.update_string(record.INCLUYE),
-      'cover': this.update_string(record.TIPO),
-      'illustrations': this.update_string(record.ILUSTRACION),
+      'brings': this.update_brings(record.INCLUYE),
+      'cover': this.update_cover(record.TIPO),
+      'illustrations': this.update_illustration(record.ILUSTRACION),
       'high': this.update_int(record.TAM),
       'width': 0,
       'price': this.update_int(record.PRECIO),
