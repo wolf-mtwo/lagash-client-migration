@@ -40,10 +40,10 @@ export class StoreBook extends Store {
   }
 
   async store() {
-    if (this.libro.start >= this.libro.end) {
-      this.store_helpers();
-      return;
-    }
+    // if (this.libro.start >= this.libro.end) {
+    //   this.store_helpers();
+    //   return;
+    // }
     this.libro.start++;
     let first_book = await this.libro.model.find_one({});
     if (!first_book) {
@@ -117,6 +117,7 @@ export class StoreBook extends Store {
       }
       this.store_next();
     } catch (e) {
+      // console.log(e);
       // this.libro.model.remove(first_book);
       // this.store_next();
       this.logger.error(e.response ? e.response.body: e);
@@ -159,6 +160,7 @@ export class StoreBook extends Store {
       editorial_id: editorial._id,
       image: null
     };
+    // console.log(item);
     return this.store_record(item)
     .then((res) => {
       return res.body;

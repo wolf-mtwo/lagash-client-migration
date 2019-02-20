@@ -27,13 +27,14 @@ export class Uploader {
     this.logger.info('start book');
     // this.storeBook.start(this.isEmpty, this);
     this.logger.info('start thesis');
-    this.storeThesis.start(this.isEmpty, this);
+    // this.storeThesis.start(this.isEmpty, this);
+    this.store_helpers();
   }
 
   store_helpers() {
-    this.logger.info('start autor');
-    this.storeAutor.start(this.isEmpty);
-    this.logger.info('start editorial');
-    this.storeEditorial.start(this.isEmpty);
+    // this.logger.info('start autor');
+    // this.storeAutor.start(this.isEmpty);
+    // this.logger.info('start editorial');
+    // this.storeEditorial.start(this.isEmpty);
   }
 }
